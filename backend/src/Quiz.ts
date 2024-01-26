@@ -18,7 +18,7 @@ interface Problem {
     id: string;
     title: string;
     description: string;
-    image: string;
+    image?: string;
     startTime: number;
     answer: AllowedSubmmision;
     option: {

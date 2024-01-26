@@ -34,10 +34,10 @@ export class UserManager{
             if(data.password != ADMIN_PASSWORD){
                 return;
             }
-            socket.emit("admintinit",{
-                userId,
-                state:this.quizManager.getCurrentState(roomId)
-            });
+            // socket.emit("admintinit",{
+            //     userId,
+            //     state:this.quizManager.getCurrentState(roomId)
+            // });
 
             socket.on("createQuiz",data=>{
                 this.quizManager.addQuiz(data.roomId);
