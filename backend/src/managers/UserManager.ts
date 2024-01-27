@@ -2,31 +2,23 @@ import { Socket } from "socket.io";
 import { QuizManager } from "./QuizManager";
 const  ADMIN_PASSWORD= "ADMIN_PASSWORD";
 export class UserManager{
-    private users:{
-        roomId:string;
-        socket:Socket;
-    }[];
     private quizManager;
 
     constructor(){
-        this.users = [];
         this.quizManager = new QuizManager;
     }
 
-    addUser(roomId:string,socket:Socket){
-        this.users.push({
-            socket,roomId
-        })
-        this.createHandlers(roomId,socket);
+    addUser(socket:Socket){
+        this.createHandlers(socket);
     }
     
 
-    private createHandlers(roomId:string,socket:Socket){
+    private createHandlers(socket:Socket){
         socket.on("join",(data)=>{
             const userId = this.quizManager.addUser(data.roomId,data.name)
             socket.emit("init",{
                 userId,
-                state:this.quizManager.getCurrentState(roomId)
+                state:this.quizManager.getCurrentState(data.roomId)
             });
         });
         socket.on("joinAdmin",(data)=>{
@@ -34,11 +26,6 @@ export class UserManager{
             if(data.password != ADMIN_PASSWORD){
                 return;
             }
-            // socket.emit("admintinit",{
-            //     userId,
-            //     state:this.quizManager.getCurrentState(roomId)
-            // });
-
             socket.on("createQuiz",data=>{
                 this.quizManager.addQuiz(data.roomId);
             })
@@ -59,7 +46,7 @@ export class UserManager{
                 console.error("issue while getting input",submission);
                 return;
             }
-            this.quizManager.submit(userId,roomId,problemId,submission);
+            this.quizManager.submit(userId,data.roomId,problemId,submission);
         });
     } 
 }

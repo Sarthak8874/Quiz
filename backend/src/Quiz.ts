@@ -42,8 +42,18 @@ export class Quiz {
         this.activeProblem = 0;
         this.users = [];
         this.currentState = "not_started"
+        setInterval(()=>{
+            this.debug()
+        },1000)
     }
-
+    debug(){
+        console.log("----debug----");
+        console.log(this.roomId);
+        console.log(this.problems);
+        console.log(this.users);
+        console.log(this.currentState);
+        console.log(this.activeProblem);
+    }
     addProblem(problem: Problem) {
         this.problems.push(problem);
         console.log(this.problems)
@@ -55,6 +65,7 @@ export class Quiz {
         console.log(this.problems)
     }
     setActiveProblem(problem:Problem){
+        this.currentState = "question";
         problem.startTime  = new Date().getTime();
         problem.submissions = [];
         IoManager.getIo().emit("CHANGE_PROBLEM", {
@@ -66,12 +77,14 @@ export class Quiz {
         },PROBLEM_TIME_S*1000);
     }
     sendLeaderboard(){
+        this.currentState = "leaderboard";
         const leaderboard = this.getLeaderboard().splice(0,20);
         IoManager.getIo().to(this.roomId).emit("leaderboard",{
             leaderboard
         })
     }
     next() {
+        this.currentState = "question";
         this.activeProblem++;
         const problem = this.problems[this.activeProblem];
         const io = IoManager.getIo();

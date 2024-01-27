@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import CreateProblem from "./CreateProblem";
+import QuizControls from "./QuizControls";
 
 const Admin = () => {
   const [roomId, setroomId] = useState("");
@@ -29,7 +30,9 @@ const Admin = () => {
         />
         <button
           onClick={() => {
-            socket?.emit("createQuiz");
+            socket?.emit("createQuiz",{
+              roomId:roomId
+            });
             setQuizId(roomId);
           }}
         >
@@ -41,6 +44,7 @@ const Admin = () => {
   return (
     <div>
       <CreateProblem roomId={roomId} socket={socket} />
+      <QuizControls socket={socket} roomId={roomId}/>
     </div>
   );
 };
