@@ -19,6 +19,7 @@ const Admin = () => {
       });
     });
   }, []);
+  
   if (!quizId) {
     return (
       <div>
