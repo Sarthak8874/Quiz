@@ -1,4 +1,5 @@
 import { IoManager } from "./managers/IoManager";
+const { v4: uuidv4 } = require('uuid');
 
 export type AllowedSubmmision = 0 | 1 | 2 | 3;
 const PROBLEM_TIME_S = 20;
@@ -7,6 +8,7 @@ interface User {
     name: string;
     id: string;
     points: number;
+    roomId:string
 }
 export interface Submission {
     problemId: string;
@@ -42,11 +44,6 @@ export class Quiz {
         this.activeProblem = 0;
         this.users = [];
         this.currentState = "not_started"
-        console.log("room created");
-        setInterval(() => {
-            this.debug();
-        }, 10000)
-
     }
 
     debug() {
@@ -59,24 +56,19 @@ export class Quiz {
     }
     addProblem(problem: Problem) {
         this.problems.push(problem);
-        this.debug();
-        console.log(this.problems)
     }
 
     start() {
         this.hasStarted = true;
         this.setActiveProblem(this.problems[0]);
-        console.log(this.problems)
     }
     setActiveProblem(problem:Problem){
         this.currentState = "question";
         problem.startTime  = new Date().getTime();
         problem.submissions = [];
-        console.log(problem)
         IoManager.getIo().emit("problem", {
             problem
         })
-        // 
         setTimeout(()=>{
             this.sendLeaderboard();
         },PROBLEM_TIME_S*1000);
@@ -90,7 +82,6 @@ export class Quiz {
     }
     next() {
         // this.currentState = "problem";
-        console.log("next")
         this.activeProblem++;
         const problem = this.problems[this.activeProblem];
         const io = IoManager.getIo();
@@ -102,21 +93,15 @@ export class Quiz {
         }
 
     }
-    generateRandomString = (length: number) => {
-        let result = '';
-        const characters =
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    };
-    addUser(name: string) {
-        const id = this.generateRandomString(7);
+    
+    addUser(name: string,roomId:string) {
+        const id = uuidv4();
+       
+
         this.users.push({
             id,
             name,
+            roomId,
             points: 0
         })
         return id;
@@ -140,6 +125,9 @@ export class Quiz {
         });
 
         user.points += 1000 - 500*(new Date().getTime() - problem?.startTime)/PROBLEM_TIME_S
+    }
+    getUser(id:string){
+        return this.users.find((x)=>x.id === id);
     }
     getLeaderboard(){
         return this.users.sort((a,b)=>a.points<b.points?1:-1).slice(0,20);

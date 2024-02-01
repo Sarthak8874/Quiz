@@ -6,13 +6,15 @@ import CurrentQuestion from "./CurrentQuestion";
 import Leaderboard from "./Leaderboard";
 
 const User = () => {
+  const searchParams = new URLSearchParams(document.location.search);
+
   const [socket, setSocket] = useState<null | Socket>(null);
   const [currentState, setCurrentState] = useState("not_started");
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [leaderboard, setLeaderboard] = useState(null);
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(searchParams.get("userId")||"");
 
-  const searchParams = new URLSearchParams(document.location.search);
+  
   const roomId = searchParams.get("roomId");
 
   useEffect(() => {
@@ -23,22 +25,25 @@ const User = () => {
       console.log(socket.id);
       socket.emit("join", {
         roomId: roomId,
+        userId:localStorage.getItem("userId"),
         name: "Sarthak",
       });
     });
 
     socket.on("init", ({ userId, state }) => {
       setUserId(userId);
-      console.log(state);
-      if (state.leaderboard) {
-        setLeaderboard(state.leaderboard);
-      }
+      console.log(userId)
+      localStorage.setItem("userId",userId);
       if (state.question) {
         setCurrentQuestion(state.question);
+      }
+      if(state.leaderboard){
+        setLeaderboard(state.leaderboard);
       }
 
       socket.on("leaderboard", (data) => {
         setCurrentState("leaderboard");
+        console.log("dk");
         setLeaderboard(data.leaderboard);
       });
       socket.on("problem", (data) => {
@@ -48,7 +53,7 @@ const User = () => {
       setCurrentState(state.type);
     });
   }, []);
-  console.log(currentState)
+
   if (currentState == "not_started") {
     return (
       <>

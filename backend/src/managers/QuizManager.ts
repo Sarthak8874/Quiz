@@ -47,8 +47,11 @@ export class QuizManager{
         }
         quiz.next();
     }
+    getUser(roomId:string,userId:string){
+
+    }
     addUser(roomId:string,name:string){
-        return this.getQuiz(roomId)?.addUser(name);
+        return this.getQuiz(roomId)?.addUser(name,roomId);
     }
     submit(userId:string,roomId:string,problemId:string,submission:0|1|2|3){
         this.getQuiz(roomId)?.submit(userId,roomId,problemId,submission);

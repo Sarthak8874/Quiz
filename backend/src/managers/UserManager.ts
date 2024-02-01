@@ -15,6 +15,9 @@ export class UserManager {
 
     private createHandlers(socket: Socket) {
         socket.on("join", (data) => {
+            if(this.quizManager.getQuiz(data.roomId)?.getUser(data.userId)){
+                return;
+            }
             const userId = this.quizManager.addUser(data.roomId, data.name)
             socket.emit("init", {
                 userId,
