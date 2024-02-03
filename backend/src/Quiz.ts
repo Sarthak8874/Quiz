@@ -127,7 +127,7 @@ export class Quiz {
         user.points += 1000 - 500*(new Date().getTime() - problem?.startTime)/PROBLEM_TIME_S
     }
     getUser(id:string){
-        return this.users.find((x)=>x.id === id);
+        return this.users.find((x)=>x.id === id)?.id;
     }
     getLeaderboard(){
         return this.users.sort((a,b)=>a.points<b.points?1:-1).slice(0,20);

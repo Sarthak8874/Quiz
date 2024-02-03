@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import User from "./components/User";
 import Admin from "./components/Admin";
+import Home from "./components/Home";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -12,10 +13,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/">
-          <Route path="admin" element = {<Admin/>}/>
-          <Route path = "user" element = {<User/>}/>
-        </Route>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/user" element={<User />} />
       </Routes>
     </BrowserRouter>
   );

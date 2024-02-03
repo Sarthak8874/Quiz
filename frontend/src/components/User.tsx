@@ -17,6 +17,7 @@ const User = () => {
   
   const roomId = searchParams.get("roomId");
 
+console.log(localStorage.getItem("userId"))
   useEffect(() => {
     const socket = io("http://localhost:3000");
     setSocket(socket);
@@ -25,14 +26,16 @@ const User = () => {
       console.log(socket.id);
       socket.emit("join", {
         roomId: roomId,
-        userId:localStorage.getItem("userId"),
+        userId:String(localStorage.getItem("userId")),
         name: "Sarthak",
       });
     });
+    socket.on("joined",(data)=>{
+      console.log(data)
+    })
 
     socket.on("init", ({ userId, state }) => {
       setUserId(userId);
-      console.log(userId)
       localStorage.setItem("userId",userId);
       if (state.question) {
         setCurrentQuestion(state.question);
@@ -53,7 +56,7 @@ const User = () => {
       setCurrentState(state.type);
     });
   }, []);
-
+  console.log(currentState);
   if (currentState == "not_started") {
     return (
       <>

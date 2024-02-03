@@ -15,10 +15,12 @@ export class UserManager {
 
     private createHandlers(socket: Socket) {
         socket.on("join", (data) => {
-            if(this.quizManager.getQuiz(data.roomId)?.getUser(data.userId)){
-                return;
+            console.log(JSON.stringify(data))
+            let userId = this.quizManager.getQuiz(data.roomId)?.getUser(data.userId);
+            console.log(userId)
+            if(!userId){
+                userId = this.quizManager.addUser(data.roomId, data.name)
             }
-            const userId = this.quizManager.addUser(data.roomId, data.name)
             socket.emit("init", {
                 userId,
                 state: this.quizManager.getCurrentState(data.roomId)
