@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import CreateProblem from "./CreateProblem";
 import QuizControls from "./QuizControls";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
 
 const Admin = () => {
   const [roomId, setroomId] = useState("");
@@ -19,33 +21,37 @@ const Admin = () => {
       });
     });
   }, []);
-  
+
   if (!quizId) {
     return (
-      <div>
-        <input
-          type="text"
-          onChange={(e) => {
-            setroomId(e.target.value);
-          }}
-        />
-        <button
-          onClick={() => {
-            socket?.emit("createQuiz",{
-              roomId:roomId
-            });
-            setQuizId(roomId);
-          }}
-        >
-          Create Room
-        </button>
+      <div className="flex h-[90vh] w-full justify-center items-center">
+        <div className="flex w-full max-w-sm items-center space-x-2">
+          <Input
+            onChange={(e) => {
+              setroomId(e.target.value);
+            }}
+            type="email"
+            placeholder="Enter Room Id"
+          />
+          <Button
+            onClick={() => {
+              socket?.emit("createQuiz", {
+                roomId: roomId,
+              });
+              setQuizId(roomId);
+            }}
+            type="submit"
+          >
+            Create Room
+          </Button>
+        </div>
       </div>
     );
   }
   return (
     <div>
       <CreateProblem roomId={roomId} socket={socket} />
-      <QuizControls socket={socket} roomId={roomId}/>
+      <QuizControls socket={socket} roomId={roomId} />
     </div>
   );
 };

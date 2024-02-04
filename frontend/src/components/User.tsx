@@ -4,20 +4,22 @@ import CreateProblem from "./CreateProblem";
 import QuizControls from "./QuizControls";
 import CurrentQuestion from "./CurrentQuestion";
 import Leaderboard from "./Leaderboard";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { useNavigate } from "react-router-dom";
 
 const User = () => {
   const searchParams = new URLSearchParams(document.location.search);
 
   const [socket, setSocket] = useState<null | Socket>(null);
-  const [currentState, setCurrentState] = useState("not_started");
+  const [currentState, setCurrentState] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [leaderboard, setLeaderboard] = useState(null);
-  const [userId, setUserId] = useState(searchParams.get("userId")||"");
-
-  
+  const [userId, setUserId] = useState(searchParams.get("userId") || "");
+  const [roomID, setRoomID] = useState("");
+  const Navigate = useNavigate();
   const roomId = searchParams.get("roomId");
 
-console.log(localStorage.getItem("userId"))
   useEffect(() => {
     const socket = io("http://localhost:3000");
     setSocket(socket);
@@ -26,21 +28,21 @@ console.log(localStorage.getItem("userId"))
       console.log(socket.id);
       socket.emit("join", {
         roomId: roomId,
-        userId:String(localStorage.getItem("userId")),
+        userId: String(localStorage.getItem("userId")),
         name: "Sarthak",
       });
     });
-    socket.on("joined",(data)=>{
-      console.log(data)
-    })
+    socket.on("joined", (data) => {
+      console.log(data);
+    });
 
     socket.on("init", ({ userId, state }) => {
       setUserId(userId);
-      localStorage.setItem("userId",userId);
+      localStorage.setItem("userId", userId);
       if (state.question) {
         setCurrentQuestion(state.question);
       }
-      if(state.leaderboard){
+      if (state.leaderboard) {
         setLeaderboard(state.leaderboard);
       }
 
@@ -55,8 +57,8 @@ console.log(localStorage.getItem("userId"))
       });
       setCurrentState(state.type);
     });
-  }, []);
-  console.log(currentState);
+  }, [roomId]);
+
   if (currentState == "not_started") {
     return (
       <>
@@ -78,7 +80,29 @@ console.log(localStorage.getItem("userId"))
       </>
     );
   }
-  return <div>User</div>;
+
+  return (
+    <div className="flex h-[90vh] w-full justify-center items-center">
+      {" "}
+      <div className="flex w-full max-w-sm items-center space-x-2">
+        <Input
+          onChange={(e) => {
+            setRoomID(e.target.value);
+          }}
+          type="text"
+          placeholder="Enter Room ID"
+        />
+        <Button
+          onClick={() => {
+            Navigate(`/user?roomId=${roomID}`);
+          }}
+          type="submit"
+        >
+          Join Room
+        </Button>
+      </div>
+    </div>
+  );
 };
 
 export default User;
