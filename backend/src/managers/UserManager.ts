@@ -17,7 +17,7 @@ export class UserManager {
         socket.on("join", (data) => {
             console.log(JSON.stringify(data))
             let userId = this.quizManager.getQuiz(data.roomId)?.getUser(data.userId);
-            console.log(userId)
+            console.log(userId,'userId')
             if(!userId){
                 userId = this.quizManager.addUser(data.roomId, data.name)
             }

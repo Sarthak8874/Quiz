@@ -15,6 +15,7 @@ const User = () => {
   const [currentState, setCurrentState] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [leaderboard, setLeaderboard] = useState(null);
+  const [name,setName] = useState("");
   const [userId, setUserId] = useState(searchParams.get("userId") || "");
   const [roomID, setRoomID] = useState("");
   const Navigate = useNavigate();
@@ -29,7 +30,7 @@ const User = () => {
       socket.emit("join", {
         roomId: roomId,
         userId: String(localStorage.getItem("userId")),
-        name: "Sarthak",
+        name: name,
       });
     });
     socket.on("joined", (data) => {
@@ -82,8 +83,17 @@ const User = () => {
   }
 
   return (
-    <div className="flex h-[90vh] w-full justify-center items-center">
+    <div className="flex flex-col gap-[20px] h-[90vh] w-full justify-center items-center">
       {" "}
+      <div className="flex w-full max-w-sm items-center space-x-2">
+        <Input
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+          type="text"
+          placeholder="Enter Your Name"
+        />
+      </div>
       <div className="flex w-full max-w-sm items-center space-x-2">
         <Input
           onChange={(e) => {

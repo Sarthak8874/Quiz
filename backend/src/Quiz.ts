@@ -82,8 +82,8 @@ export class Quiz {
     }
     next() {
         // this.currentState = "problem";
-        this.activeProblem++;
         const problem = this.problems[this.activeProblem];
+        this.activeProblem++;
         const io = IoManager.getIo();
 
         if (problem) {
