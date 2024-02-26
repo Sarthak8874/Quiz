@@ -108,13 +108,14 @@ export class Quiz {
     submit(userId: string, roomId: string, problemId: string, submission: AllowedSubmmision) {
         const problem = this.problems.find(x => x.id == problemId);
         const user = this.users.find(x => x.id == userId)
+       
         if (!problem || !user) {
             return
         }
         const existingSubmission = problem.submissions.find(x => x.userId === userId);
         if (existingSubmission) {
             return;
-        }       
+        }      
 
         problem.submissions.push({
             problemId,
@@ -123,7 +124,10 @@ export class Quiz {
             optionSelected: submission,
         });
 
-        user.points += 1000 - 500*(new Date().getTime() - problem?.startTime)/PROBLEM_TIME_S
+        if(problem.answer == submission){
+            user.points += 50*(PROBLEM_TIME_S-((new Date().getTime() - problem?.startTime)/1000));
+        }
+       
     }
     getUser(id:string){
         return this.users.find((x)=>x.id === id)?.id;

@@ -2,8 +2,21 @@ import React, { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
+import { Socket } from "socket.io-client";
 
-const CurrentQuestion = ({ question }: { question: any }) => {
+const CurrentQuestion = ({
+  question,
+  socket,
+  userId,
+  roomId
+}: {
+  question: any;
+  socket: Socket;
+  userId: string;
+  roomId:string;
+}) => {
+  const [answer, setAnswer] = useState(null);
+  console.log(question);
   return (
     <>
       <div className="flex flex-col gap-[20px] p-[40px] pb-[20px]">
@@ -19,14 +32,24 @@ const CurrentQuestion = ({ question }: { question: any }) => {
             >
               <input
                 type="radio"
-                // checked={answer === optionId}
-                // onChange={() => setAnswer(optionId)}
+                checked={answer === optionId.id}
+                onChange={() => setAnswer(optionId.id)}
               ></input>
               <Input type="text" disabled={true} value={optionId.title}></Input>
             </div>
           ))}
         </div>
-        <Button className="w-[25%]" onClick={() => {}}>
+        <Button
+          className="w-[25%]"
+          onClick={() => {
+            socket.emit("submit", {
+              userId:userId,
+              roomId:roomId,
+              problemId:question.id,
+              submission:answer
+            });
+          }}
+        >
           Submit
         </Button>
       </div>

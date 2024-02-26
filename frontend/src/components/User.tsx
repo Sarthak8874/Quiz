@@ -70,10 +70,10 @@ const User = () => {
       </>
     );
   }
-  if (currentState == "problem") {
+  if (currentState == "problem" && roomId && socket) {
     return (
       <>
-        <CurrentQuestion question={currentQuestion} />
+        <CurrentQuestion roomId={roomId} userId = {userId} socket={socket} question={currentQuestion} />
       </>
     );
   }
