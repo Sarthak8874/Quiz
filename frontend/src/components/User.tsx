@@ -15,8 +15,8 @@ const User = () => {
   const [currentState, setCurrentState] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [leaderboard, setLeaderboard] = useState(null);
-  const [name,setName] = useState("");
-  const [userId, setUserId] = useState(searchParams.get("userId") || "");
+  const [name, setName] = useState("");
+  const [userId, setUserId] = useState(String(localStorage.getItem("userId"))|| "");
   const [roomID, setRoomID] = useState("");
   const Navigate = useNavigate();
   const roomId = searchParams.get("roomId");
@@ -24,42 +24,45 @@ const User = () => {
   useEffect(() => {
     const socket = io("http://localhost:3000");
     setSocket(socket);
-    // client-side
+    if(!roomId){
+      return;
+    }
     socket.on("connect", () => {
-      console.log(socket.id);
       socket.emit("join", {
         roomId: roomId,
-        userId: String(localStorage.getItem("userId")),
+        userId: userId,
         name: name,
       });
+    
+      
     });
-    socket.on("joined", (data) => {
-      console.log(data);
-    });
-
     socket.on("init", ({ userId, state }) => {
+
       setUserId(userId);
       localStorage.setItem("userId", userId);
-      if (state.question) {
-        setCurrentQuestion(state.question);
+      if (state.problem) {
+        setCurrentState("problem");
+        setCurrentQuestion(state.problem);
       }
       if (state.leaderboard) {
+        setCurrentState("leaderboard");
         setLeaderboard(state.leaderboard);
       }
-
-      socket.on("leaderboard", (data) => {
-        setCurrentState("leaderboard");
-        console.log("dk");
-        setLeaderboard(data.leaderboard);
-      });
-      socket.on("problem", (data) => {
-        setCurrentState("problem");
-        setCurrentQuestion(data.problem);
-      });
+     
       setCurrentState(state.type);
     });
+    socket.on("leaderboard", (data) => {
+      setCurrentState("leaderboard");
+      console.log("dk");
+      setLeaderboard(data.leaderboard);
+    });
+    socket.on("problem", (data) => {
+      setCurrentState("problem");
+      setCurrentQuestion(data.problem);
+    });
+   
   }, [roomId]);
-
+  
   if (currentState == "not_started") {
     return (
       <>

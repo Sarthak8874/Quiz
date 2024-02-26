@@ -41,7 +41,7 @@ export class QuizManager{
     }
     public next(roomId:string){
         const quiz = this.getQuiz(roomId);
-        console.log(quiz,"quiz")
+        
         if(!quiz){
             return;
         }

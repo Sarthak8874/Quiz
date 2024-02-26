@@ -15,9 +15,9 @@ export class UserManager {
 
     private createHandlers(socket: Socket) {
         socket.on("join", (data) => {
-            console.log(JSON.stringify(data))
+
             let userId = this.quizManager.getQuiz(data.roomId)?.getUser(data.userId);
-            console.log(userId,'userId')
+            console.log(data)
             if(!userId){
                 userId = this.quizManager.addUser(data.roomId, data.name)
             }
@@ -25,6 +25,7 @@ export class UserManager {
                 userId,
                 state: this.quizManager.getCurrentState(data.roomId)
             });
+            socket.join(data.roomId);
         });
         socket.on("joinAdmin", (data) => {
             const userId = this.quizManager.addUser(data.roomId, data.name)
@@ -36,7 +37,7 @@ export class UserManager {
             })
 
             socket.on("createproblem", data => {
-                console.log(this.quizManager.addProblem)
+
                 this.quizManager.addProblem(data.roomId, data.problem);
             })
 

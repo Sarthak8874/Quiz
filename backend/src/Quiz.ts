@@ -35,7 +35,7 @@ export class Quiz {
     private problems: Problem[];
     private activeProblem: number;
     private users: User[];
-    private currentState :"leaderboard"|"question"|"not_started"|"ended";
+    private currentState :"leaderboard"|"problem"|"not_started"|"ended";
 
     constructor(roomId: string) {
         this.roomId = roomId;
@@ -63,10 +63,10 @@ export class Quiz {
         this.setActiveProblem(this.problems[0]);
     }
     setActiveProblem(problem:Problem){
-        this.currentState = "question";
+        this.currentState = "problem";
         problem.startTime  = new Date().getTime();
         problem.submissions = [];
-        IoManager.getIo().emit("problem", {
+        IoManager.getIo().to(this.roomId).emit("problem", {
             problem
         })
         setTimeout(()=>{
@@ -96,7 +96,6 @@ export class Quiz {
     
     addUser(name: string,roomId:string) {
         const id = uuidv4();
-       
 
         this.users.push({
             id,
@@ -150,10 +149,10 @@ export class Quiz {
                 leaderboard:this.getLeaderboard()
             }
         }
-        if(this.currentState === "question"){
+        if(this.currentState === "problem"){
             const problem = this.problems[this.activeProblem];
             return {
-                type:"question",
+                type:"problem",
                 problem
             } 
         }
